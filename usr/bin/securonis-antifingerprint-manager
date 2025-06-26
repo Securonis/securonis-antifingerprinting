@@ -5,14 +5,13 @@ mkdir -p /etc/securonis/manager
 mkdir -p /etc/securonis/dmesg
 
 # List of all securonis services
-# Kritik servisler - her zaman çalıştırılır
+
 CRITICAL_SERVICES=(
-    "securonis-hidecpu.service"
     "securonis-hide-hwinfo.service"
     "securonis-dmesg-restrict.service"
 )
 
-# Performans servisler - sistem yükünü azaltmak için optimize edilmiş
+
 PERFORMANCE_SERVICES=(
     "securonis-canvas-noise.service"
     "securonis-useragent-randomizer.service"
@@ -22,12 +21,12 @@ PERFORMANCE_SERVICES=(
     "securonis-cookie-manager.service"
 )
 
-# Opsiyonel servisler - kullanıcı deneyimini etkileyebilir
+
 OPTIONAL_SERVICES=(
     "securonis-screen-randomizer.service"
 )
 
-# Tüm servisleri birleştir
+
 ALL_SERVICES=("${CRITICAL_SERVICES[@]}" "${PERFORMANCE_SERVICES[@]}" "${OPTIONAL_SERVICES[@]}")
 
 # Function to start all services

@@ -1,3 +1,0 @@
-#!/bin/bash
-chmod 640 /proc/cpuinfo
-chown root:root /proc/cpuinfo
