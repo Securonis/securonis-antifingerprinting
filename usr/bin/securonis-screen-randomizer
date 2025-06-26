@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Create a directory for the screen resolution settings if it doesn't exist
+mkdir -p /etc/securonis/screen
+
+# Function to randomize screen resolution information for browsers
+randomize_screen_info() {
+    # Create a small offset for screen dimensions (1-5 pixels)
+    # Daha küçük değişiklikler yaparak kullanıcı deneyimini koruyoruz
+    WIDTH_OFFSET=$((RANDOM % 5 + 1))
+    HEIGHT_OFFSET=$((RANDOM % 5 + 1))
+    
+    # Save the offsets to a file
+    echo "SCREEN_WIDTH_OFFSET=$WIDTH_OFFSET" > /etc/securonis/screen/offsets
+    echo "SCREEN_HEIGHT_OFFSET=$HEIGHT_OFFSET" >> /etc/securonis/screen/offsets
+    
+    # Create Firefox override if Firefox directory exists
+    if [ -d /etc/firefox/pref ]; then
+        mkdir -p /etc/firefox/pref
+        # Letterboxing kullanarak ekran boyutlarını gizliyoruz
+        echo 'pref("privacy.resistFingerprinting.letterboxing", true);' > /etc/firefox/pref/screen-settings.js
+    fi
+    
+    # Create Chrome override if Chrome directory exists
+    if [ -d /etc/opt/chrome/policies/managed ]; then
+        mkdir -p /etc/opt/chrome/policies/managed
+        echo '{
+  "ScreenSizeOffsetWidth": '$WIDTH_OFFSET',
+  "ScreenSizeOffsetHeight": '$HEIGHT_OFFSET'
+}' > /etc/opt/chrome/policies/managed/screen.json
+    fi
+    
+    # Sleep for a random period between 6-12 hours before changing again
+    # Daha uzun süre bekleyerek sistem yükünü azaltıyoruz
+    sleep $((RANDOM % 21600 + 21600))
+}
+
+# Main loop to continuously randomize screen information
+while true; do
+    randomize_screen_info
+done

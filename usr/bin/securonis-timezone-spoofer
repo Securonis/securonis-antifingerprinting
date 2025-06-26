@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Create a directory for the timezone settings if it doesn't exist
+mkdir -p /etc/securonis/timezone
+
+# Common timezones to rotate through - sadece tarayıcı için kullanılacak
+TIMEZONES=(
+    "Europe/London"
+    "Europe/Paris"
+    "Europe/Berlin"
+    "Europe/Madrid"
+    "Europe/Rome"
+    "Europe/Amsterdam"
+    "Europe/Vienna"
+    "Europe/Brussels"
+    "Europe/Stockholm"
+    "Europe/Zurich"
+)
+
+# Function to spoof timezone ONLY for browsers, not system time
+spoof_timezone() {
+    # Select a random timezone from the array
+    RANDOM_INDEX=$((RANDOM % ${#TIMEZONES[@]}))
+    SELECTED_TZ="${TIMEZONES[$RANDOM_INDEX]}"
+    
+    # Save the original timezone if not already saved
+    if [ ! -f /etc/securonis/timezone/original ]; then
+        if [ -f /etc/timezone ]; then
+            cat /etc/timezone > /etc/securonis/timezone/original
+        else
+            echo "UTC" > /etc/securonis/timezone/original
+        fi
+    fi
+    
+    # Save the selected timezone to a file
+    echo "$SELECTED_TZ" > /etc/securonis/timezone/current
+    
+    # Create Firefox override if Firefox directory exists
+    if [ -d /etc/firefox/pref ]; then
+        mkdir -p /etc/firefox/pref
+        echo 'pref("privacy.resistFingerprinting", true);' > /etc/firefox/pref/timezone-settings.js
+    fi
+    
+    # Create Chrome override if Chrome directory exists
+    if [ -d /etc/opt/chrome/policies/managed ]; then
+        mkdir -p /etc/opt/chrome/policies/managed
+        echo '{
+  "TimezoneOverride": "'"$SELECTED_TZ"'"
+}' > /etc/opt/chrome/policies/managed/timezone.json
+    fi
+    
+    # Sleep for a random period between 4-8 hours before changing again
+    # Daha uzun süre bekleyerek sistem yükünü azaltıyoruz
+    sleep $((RANDOM % 14400 + 14400))
+}
+
+# Main loop to continuously spoof timezone
+while true; do
+    spoof_timezone
+done

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Create a directory for hardware info protection
+mkdir -p /etc/securonis/hwinfo
+
+# Function to protect hardware information files
+protect_hw_files() {
+    # Protect CPU information
+    if [ -f /proc/cpuinfo ]; then
+        chmod 640 /proc/cpuinfo
+        chown root:root /proc/cpuinfo
+    fi
+    
+    # Protect memory information
+    if [ -f /proc/meminfo ]; then
+        chmod 640 /proc/meminfo
+        chown root:root /proc/meminfo
+    fi
+    
+    # Protect device information
+    if [ -d /sys/devices ]; then
+        find /sys/devices -type f -name "modalias" -exec chmod 640 {} \; 2>/dev/null
+        find /sys/devices -type f -name "vendor" -exec chmod 640 {} \; 2>/dev/null
+        find /sys/devices -type f -name "device" -exec chmod 640 {} \; 2>/dev/null
+    fi
+    
+    # Protect PCI information
+    if [ -d /sys/bus/pci/devices ]; then
+        find /sys/bus/pci/devices -type f -name "*" -exec chmod 640 {} \; 2>/dev/null
+    fi
+    
+    # Protect USB information
+    if [ -d /sys/bus/usb/devices ]; then
+        find /sys/bus/usb/devices -type f -name "*" -exec chmod 640 {} \; 2>/dev/null
+    fi
+    
+    # Protect network information
+    if [ -d /sys/class/net ]; then
+        chmod -R o-r /sys/class/net/
+    fi
+    
+    # Create a log file
+    echo "Hardware information protection applied at $(date)" > /etc/securonis/hwinfo/status
+}
+
+# Apply protection
+protect_hw_files
+
+exit 0

@@ -1,0 +1,11 @@
+[Unit]
+Description=Securonis - Hide CPU Info
+After=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/securonis-hide-cpuinfo
+
+[Install]
+WantedBy=multi-user.target
