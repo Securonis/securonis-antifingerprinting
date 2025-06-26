@@ -8,8 +8,6 @@ sudo /usr/bin/securonis-antifingerprint-manager start
 sudo systemctl stop securonis-antifingerprint.service
 ```
 
-veya
-
 ```bash
 sudo /usr/bin/securonis-antifingerprint-manager stop
 ```
