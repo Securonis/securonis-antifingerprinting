@@ -25,7 +25,6 @@ add_canvas_noise() {
     fi
     
     # Sleep for a random period between 2-4 hours before changing again
-    # Daha uzun süre bekleyerek sistem yükünü azaltıyoruz
     sleep $((RANDOM % 7200 + 7200))
 }
 
